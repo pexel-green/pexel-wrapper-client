@@ -1,7 +1,6 @@
 export default function GelleryWrapper() {
     return (
         <div>
-
             <LoadMoreButton />
         </div>
     )

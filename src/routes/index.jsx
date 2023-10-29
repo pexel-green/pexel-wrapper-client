@@ -1,9 +1,9 @@
 import GalleryList from "../component/galleryList";
+import { Link } from "react-router-dom"
 
 export default function Index() {
     return (
         <>
-            <JoinButton />
             <SearchWithBackGround />
             <GalleryList />
         </>
@@ -13,6 +13,7 @@ export default function Index() {
 function SearchWithBackGround() {
     return (
         <section className="search">
+            <JoinButton />
             <img src="https://images.pexels.com/photos/16714211/pexels-photo-16714211.jpeg?auto=compress&bri=5&cs=tinysrgb&fit=crop&h=500&w=1400&dpr=1" alt="search-img" />
             <div className="content">
                 <h1>The best free medium, royalty free</h1>
@@ -28,10 +29,10 @@ function SearchWithBackGround() {
 
 function JoinButton() {
     return (
-        <div className="container mx-auto text-right relative">
-            <span className="font-semibold rounded-lg top-4 z-10 absolute inline-block bg-white text-gray-600 px-5 py-3 cursor-pointer">
-                Join
-            </span>
-        </div>
+        <Link
+            to={"/login"}
+            className="font-semibold rounded-lg top-4 right-4 z-10 absolute inline-block bg-white text-gray-600 px-5 py-3 cursor-pointer">
+            Join
+        </Link>
     )
 }

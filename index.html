@@ -6,11 +6,41 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PEXEL</title>
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 </head>
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  <script>
+    window.showLightbox = (name, img) => {
+      const lightbox = window.document.querySelector(".lightbox");
+      const downloadImgBtn = lightbox.querySelector(".uil-import");
+
+      lightbox.querySelector("img").src = img;
+      lightbox.querySelector("span").innerText = name;
+      downloadImgBtn.setAttribute("data-img", img);
+      lightbox.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    window.hideLightbox = () => {
+      const lightbox = window.document.querySelector(".lightbox");
+      lightbox.classList.remove("show");
+      document.body.style.overflow = "auto";
+    }
+
+    window.downloadImg = (imgUrl) => {
+      // Converting received img to blob, creating its download link, & downloading it
+      fetch(imgUrl).then(res => res.blob()).then(blob => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = new Date().getTime();
+        a.click();
+      }).catch(() => alert("Failed to download image!"));
+    }
+
+  </script>
 </body>
 
 </html>
