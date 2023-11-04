@@ -326,3 +326,8 @@ header .buttons i:last-child:hover {
         font-size: 1.05rem;
     }
 }
+
+.profile-filter>button {
+    background-color: #05a081 !important;
+    padding: 10px;
+}

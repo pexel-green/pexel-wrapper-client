@@ -13,7 +13,13 @@ import Root from "./routes/root";
 import ErrorPage from './errors/error-page';
 import Index from './routes/index';
 import Login from './routes/login';
+import Profile from './routes/profile';
 
+import Upload from './routes/upload';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import { Toaster } from 'react-hot-toast';
+import EditProfile from './routes/edit-profile';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +30,19 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "upload",
+        element: <Upload />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
+
+      {
+        path: "edit-profile",
+        element: <EditProfile />,
       },
 
       // {
@@ -50,6 +69,9 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+      <Toaster />
+    </Provider>
   </React.StrictMode>,
 )

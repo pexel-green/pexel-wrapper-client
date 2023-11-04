@@ -1,4 +1,53 @@
+import { useEffect, useState } from "react"
+import { useLoginMutation, useVerifyTokenMutation } from "../redux/services/authService"
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import useAuthRedirect from "../custom-hook/useAuthRedirect";
+var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 export default function Login() {
+
+    const [login, { isLoading }] = useLoginMutation()
+    const [verifyToken] = useVerifyTokenMutation()
+
+    const [email, setEmail] = useState(null);
+    const [password, setPassword] = useState(null)
+    const submitLogin = () => {
+        if (!email) {
+            return toast.error("Email must be enter")
+        }
+        if (!email.match(validRegex)) {
+            return toast.error("Email format is wrong")
+        }
+
+        if (!password) {
+            return toast.error("Password must be enter")
+        }
+
+        if (password.length < 6) {
+            return toast.error("Password length must be higher than 5")
+        }
+
+        login({
+            "where": {
+                email,
+                password
+            }
+        }).unwrap().then((res) => {
+            console.log({ res })
+            localStorage.setItem("token", res.token);
+            toast.success("Login sucess")
+            verifyToken(localStorage.getItem("token"))
+        }).catch((err) => {
+            console.log({ err })
+            toast.error("Wrong credential. Try again")
+        })
+
+    }
+
+    useAuthRedirect();
+
     return (
         <>
             <div className="min-h-screen flex items-center justify-center bg-cover">
@@ -16,6 +65,7 @@ export default function Login() {
                             id="email"
                             name="email"
                             required
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
                     <div className="mb-6">
@@ -30,15 +80,28 @@ export default function Login() {
                             placeholder="Password"
                             name="password"
                             required
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
                     <div>
                         <a className="text-gray-500 hover:text-gray-800 mb-5 md:mb-0 underline decoration-dotted" href="#">
                             Forgot your password?
                         </a>
-                        <button className="block hover:bg-[#059377] text-white font-bold py-4 mt-5 rounded w-full bg-[#05a081]">
-                            Sign In
-                        </button>
+                        {
+                            isLoading ?
+                                <button
+                                    className="block text-white font-bold py-4 mt-5 rounded w-full bg-[#3f5450]">
+                                    Sign In
+                                </button>
+                                :
+                                <button
+                                    disabled={isLoading}
+                                    onClick={submitLogin}
+                                    className="block hover:bg-[#059377] text-white font-bold py-4 mt-5 rounded w-full bg-[#05a081]">
+                                    Sign In
+                                </button>
+                        }
+
                     </div>
                 </div>
                 <div

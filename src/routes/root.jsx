@@ -1,7 +1,14 @@
 import { Outlet } from "react-router-dom";
+import { useVerifyTokenMutation } from "../redux/services/authService";
+import { useEffect } from "react";
 
 
 export default function Root() {
+    const [verifyToken] = useVerifyTokenMutation()
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        token && verifyToken(token).unwrap().then(res => console.log({ res })).catch(err => console.log({ err }))
+    }, [])
 
     return (
         <>
