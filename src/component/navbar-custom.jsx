@@ -21,7 +21,6 @@ export default function Navbar() {
             </div>
             <div className="flex-none gap-2">
                 <div className="form-control">
-                    {/* <input type="text" placeholder="Search for free photo" className="input input-bordered w-auto md:w-80" /> */}
                     <div className=" w-auto md:w-80">
                         <TextInput id="email4" type="email" rightIcon={MdSearch} placeholder="Search for free photo" required />
                     </div>
