@@ -15,10 +15,9 @@ export const uploadUsingSASToken = createApi({
                 url: "photos" + SASURI.substring(SASURI.lastIndexOf("/")),
                 method: 'PUT',
                 body: file,
-                headers: {
-                    "x-ms-blob-type": "BlockBlob",
-                    "x-ms-filename": file.name
-                }
+                // headers: {
+                //     "x-ms-filename": file.name
+                // }
             }),
         }),
     }),
