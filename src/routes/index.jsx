@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import GalleryList from "../component/galleryList";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Dropdown } from "flowbite-react";
 import toast from "react-hot-toast";
 import { resetUserState } from "../redux/user";
@@ -47,8 +47,9 @@ function JoinButton() {
 
 function UserLogged({ email }) {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const handleclick = (url) => {
-        console.log({ url })
+        navigate(url)
     }
     const handleLogout = () => {
         localStorage.clear()

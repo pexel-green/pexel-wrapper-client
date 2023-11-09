@@ -3,20 +3,17 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const imageValidationApi = createApi({
     reducerPath: 'imageValidation',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://computer-vison-pexel.cognitiveservices.azure.com/vision/v3.2/analyze',
+        baseUrl: 'https://computer-vison-pexel.cognitiveservices.azure.com',
         prepareHeaders: (headers) => {
-            headers.set('Ocp-Apim-Subscription-Key', 'YOUR_SUBSCRIPTION_KEY');
+            headers.set('Ocp-Apim-Subscription-Key', 'cbe62cb6034845338e15459379fad7f7');
             return headers;
         },
     }),
     endpoints: (builder) => ({
         validateImageAdult: builder.mutation({
             query: (file) => ({
-                url: '/',
+                url: '/vision/v3.2/analyze?visualFeatures=Adult',
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
                 body: createFormData(file),
             }),
         }),

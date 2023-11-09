@@ -3,27 +3,20 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const imageSASURIGeneration = createApi({
     reducerPath: 'imageSASURIGeneration',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://pexel-media-upload.azurewebsites.net/api/upload/sasurl',
+        baseUrl: 'https://pexel-media-upload.azurewebsites.net',
     }),
     endpoints: (builder) => ({
         generateSASURI: builder.mutation({
-            query: (file) => ({
-                url: '/',
+            query: (filename) => ({
+                url: '/api/upload/sasurl',
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                body: createFormData(file)
+                body: {
+                    filename
+                }
             }),
         }),
     }),
 });
 
-// Helper function to create form data
-function createFormData(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    return formData;
-}
 
 export const { useGenerateSASURIMutation } = imageSASURIGeneration;

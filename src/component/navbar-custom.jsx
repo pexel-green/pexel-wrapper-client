@@ -2,17 +2,28 @@ import { TextInput } from "flowbite-react";
 import toast from "react-hot-toast";
 import { MdSearch } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import { resetUserState } from "../redux/user";
+import { Link, useNavigate } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { useVerifyTokenMutation } from "../redux/services/authService";
 
 export default function Navbar() {
+    const [verifyToken] = useVerifyTokenMutation()
+
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const handleLogout = () => {
         localStorage.clear()
         dispatch(resetUserState())
         toast.success("Sign out sucessfully")
     }
+
+    useLayoutEffect(() => {
+        verifyToken(localStorage.getItem("token")).unwrap().then(() => { }).catch(() => {
+            navigate("/")
+        })
+    }, [])
 
     return (
         <div className="navbar bg-base-100">

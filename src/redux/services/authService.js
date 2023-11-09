@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const authService = createApi({
     reducerPath: 'auth',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:5002/api/auth/'
+        baseUrl: import.meta.env.VITE_BE_CORE
 
     }),
     endpoints: (builder) => ({
@@ -14,14 +14,28 @@ export const authService = createApi({
                 body: data
             }),
         }),
+        register: builder.mutation({
+            query: (data) => ({
+                url: '/register',
+                method: "POST",
+                body: data
+            }),
+        }),
         verifyToken: builder.mutation({
             query: (token) => ({
                 url: '/verify',
                 method: "POST",
                 body: { token }
             })
-        })
+        }),
+        activateAccount: builder.mutation({
+            query: (token) => ({
+                url: '/activate',
+                method: "POST",
+                body: { token }
+            })
+        }),
     }),
 });
 
-export const { useLoginMutation, useVerifyTokenMutation, endpoints } = authService;
+export const { useLoginMutation, useRegisterMutation, useActivateAccountMutation, useVerifyTokenMutation, endpoints } = authService;

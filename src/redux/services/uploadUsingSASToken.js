@@ -3,21 +3,25 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const uploadUsingSASToken = createApi({
     reducerPath: 'uploadThroughSAS',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://pexel-media-upload.azurewebsites.net/api/upload/sasurl',
+        baseUrl: 'https://pexelblobstorage.blob.core.windows.net',
         prepareHeaders: (headers) => {
             headers.set('x-ms-blob-type', 'BlockBlob');
             return headers;
         },
     }),
     endpoints: (builder) => ({
-        uploadMediaUsingSASToken: builder.mutation({
-            query: (filename) => ({
-                url: '/',
+        putToBlobStorage: builder.mutation({
+            query: ({ file, SASURI }) => ({
+                url: "photos" + SASURI.substring(SASURI.lastIndexOf("/")),
                 method: 'PUT',
-                body: { filename },
+                body: file,
+                headers: {
+                    "x-ms-blob-type": "BlockBlob",
+                    "x-ms-filename": file.name
+                }
             }),
         }),
     }),
 });
 
-export const { useUploadMediaUsingSASTokenMutation } = uploadUsingSASToken;
+export const { usePutToBlobStorageMutation } = uploadUsingSASToken;

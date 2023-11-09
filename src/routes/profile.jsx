@@ -3,6 +3,7 @@ import Navbar from "../component/navbar-custom"
 import { BsFillPencilFill } from "react-icons/bs";
 import GalleryList from "../component/galleryList";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
     const [haveImage, setHaveImage] = useState(false);
@@ -19,10 +20,12 @@ export default function Profile() {
                     <Avatar img="https://avatar.iran.liara.run/public/49" rounded bordered size="xl" />
                     <p className="text-4xl text-center">Sang135@gmail.com</p>
                     <label htmlFor="changeImage" className="cursor-pointer box-border text-center">
-                        <button className="text-white pointer-events-none border-[#05a081] bg-[#05a081] cursor-pointer inline-flex justify-center items-center rounded-md h-[50px] w-max font-[500] px-7 ">
-                            <BsFillPencilFill className="mr-4 h-5 w-5" />
-                            <span>Edit Profile</span>
-                        </button>
+                        <Link to="/edit-profile">
+                            <button className="text-white pointer-events-none border-[#05a081] bg-[#05a081] cursor-pointer inline-flex justify-center items-center rounded-md h-[50px] w-max font-[500] px-7 ">
+                                <BsFillPencilFill className="mr-4 h-5 w-5" />
+                                <span>Edit Profile</span>
+                            </button>
+                        </Link>
                     </label>
                     <div className="flex justify-end gap-4 profile-filter">
                         <Dropdown label="Videos & Photos" size="sm">

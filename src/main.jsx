@@ -20,6 +20,8 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { Toaster } from 'react-hot-toast';
 import EditProfile from './routes/edit-profile';
+import Register from './routes/register';
+import Activate from './routes/activate';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,6 +45,15 @@ const router = createBrowserRouter([
       {
         path: "edit-profile",
         element: <EditProfile />,
+      },
+
+      {
+        path: "register",
+        element: <Register />,
+      },
+      {
+        path: "activate",
+        element: <Activate />,
       },
 
       // {

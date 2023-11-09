@@ -331,3 +331,19 @@ header .buttons i:last-child:hover {
     background-color: #05a081 !important;
     padding: 10px;
 }
+
+.submit-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 110px;
+    background: #f7fbfd;
+}
+
+.submit-bar-content {
+    width: 100%;
+    padding-right: 30px;
+    padding-left: 30px;
+    margin: 0 auto;
+}
