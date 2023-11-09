@@ -3,8 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const authService = createApi({
     reducerPath: 'auth',
     baseQuery: fetchBaseQuery({
-        baseUrl: import.meta.env.VITE_BE_CORE
-
+        baseUrl: 'https://be-core-service.azurewebsites.net/api/auth'
     }),
     endpoints: (builder) => ({
         login: builder.mutation({
