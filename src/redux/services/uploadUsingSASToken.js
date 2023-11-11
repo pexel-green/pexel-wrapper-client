@@ -12,12 +12,12 @@ export const uploadUsingSASToken = createApi({
     endpoints: (builder) => ({
         putToBlobStorage: builder.mutation({
             query: ({ file, SASURI }) => ({
-                url: "photos" + SASURI.substring(SASURI.lastIndexOf("/")),
+                url: SASURI.substring(SASURI.lastIndexOf("photos")),
                 method: 'PUT',
                 body: file,
-                // headers: {
-                //     "x-ms-filename": file.name
-                // }
+                headers: {
+                    "x-ms-filename": file.name
+                }
             }),
         }),
     }),

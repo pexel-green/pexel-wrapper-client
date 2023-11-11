@@ -7,11 +7,12 @@ export const imageSASURIGeneration = createApi({
     }),
     endpoints: (builder) => ({
         generateSASURI: builder.mutation({
-            query: (filename) => ({
+            query: ({ filename, user_container }) => ({
                 url: '/api/upload/sasurl',
                 method: 'POST',
                 body: {
-                    filename
+                    filename,
+                    container: user_container
                 }
             }),
         }),

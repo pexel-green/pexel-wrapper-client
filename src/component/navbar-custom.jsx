@@ -21,6 +21,7 @@ export default function Navbar() {
 
     useLayoutEffect(() => {
         verifyToken(localStorage.getItem("token")).unwrap().then(() => { }).catch(() => {
+            localStorage.clear()
             navigate("/")
         })
     }, [])

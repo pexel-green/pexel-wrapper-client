@@ -50,7 +50,7 @@ export default function Profile() {
 }
 
 
-function NoContent() {
+export function NoContent() {
     return (
         <Card className="max-w-2xl mx-auto flex justify-center flex-col text-center p-8">
             <h5 className="text-2xl font-bold tracking-tight text-center text-gray-900 dark:text-white">

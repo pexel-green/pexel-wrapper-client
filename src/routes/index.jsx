@@ -14,9 +14,16 @@ export default function Index() {
     );
 }
 
-function SearchWithBackGround() {
-    const email = useSelector(state => state.user.email)
+export function SearchWithBackGround() {
+    const email = useSelector(state => state.user.email);
+    const navigate = useNavigate()
     console.log({ email })
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') {
+            navigate("/search?search=" + encodeURIComponent(e.target.value))
+            console.log('do validate');
+        }
+    }
     return (
         <section className="search">
             {!email ? <JoinButton /> : <UserLogged email={email} />}
@@ -27,7 +34,7 @@ function SearchWithBackGround() {
                 <p>Search and download mages & videos shared by creators</p>
                 <div className="search-box">
                     <i className="uil uil-search"></i>
-                    <input type="text" placeholder="Search images & videos" />
+                    <input type="text" placeholder="Search images & videos" onKeyDown={handleEnter} />
                 </div>
             </div>
         </section>
@@ -61,7 +68,8 @@ function UserLogged({ email }) {
             className="font-semibold rounded-lg top-4 right-4 z-10 absolute inline-block text-gray-100 px-5 py-3 cursor-pointer"
         >
             <Dropdown label={email} dismissOnClick={false} inline>
-                <Dropdown.Item onClick={() => handleclick("/profile")}>Dashboard</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleclick("/profile")}>Profile</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleclick("/upload")}>Upload</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
             </Dropdown>
         </span>

@@ -7,6 +7,8 @@ import { useValidateImageAdultMutation } from "../redux/services/imageValidation
 import LoadingOverlay from "../component/loadingOverlay";
 import { useGenerateSASURIMutation } from "../redux/services/imageSASGenerate";
 import { usePutToBlobStorageMutation } from "../redux/services/uploadUsingSASToken";
+import { useSelector } from "react-redux";
+import { useAddBlobToContaintainerMutation } from "../redux/services/mediaDataService";
 
 const convertByteToMB = (b) => {
     return b / (1024 ** 2)
@@ -15,6 +17,7 @@ const allow_files = "image/jpg, image/jpeg, image/png, video/mp4, video/quicktim
 export default function Upload() {
     const [files, setFiles] = useState([]);
     const [fileTempURIs, setFileTempURIs] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [validateImageAdult, { isLoading: isLoadingValidatingImageAdult, isProcessing: isProcessingValidatingImageAdult }] = useValidateImageAdultMutation()
 
     const handleAddImage = (ev) => {
@@ -63,9 +66,13 @@ export default function Upload() {
         setFileTempURIs(prev => prev.filter((_, index) => index !== key))
     }
 
+    useEffect(() => {
+        setIsLoading(isProcessingValidatingImageAdult || isLoadingValidatingImageAdult)
+    }, [isProcessingValidatingImageAdult, isLoadingValidatingImageAdult])
+
     return (
         <>
-            <LoadingOverlay loading={isProcessingValidatingImageAdult || isLoadingValidatingImageAdult}>
+            <LoadingOverlay loading={isLoading}>
                 <Navbar />
                 <main className="px-5 max-w-screen-2xl mx-auto">
                     {
@@ -89,7 +96,7 @@ export default function Upload() {
                     }
                 </main>
                 {
-                    files.length > 0 && <SubmitFormBar files={files} setFiles={setFiles} />
+                    files.length > 0 && <SubmitFormBar files={files} setFiles={setFiles} setFileTempURIs={setFileTempURIs} setIsLoading={setIsLoading} />
                 }
 
             </LoadingOverlay>
@@ -97,17 +104,24 @@ export default function Upload() {
     )
 }
 
-function SubmitFormBar({ files, setFiles }) {
+function SubmitFormBar({ files, setFiles, setFileTempURIs, setIsLoading }) {
+    const { id: user_container_id, name: user_container } = useSelector(state => state.user.container)
+    console.log({ user_container })
     const [generateSASURI, { isLoading: isLoadingGenerate }] = useGenerateSASURIMutation();
     const [putToBlobStorage, { isLoading: isLoadingPutBlob }] = usePutToBlobStorageMutation()
+    const [addBlobToContaintainer, { isLoading: isLoadingBECore }] = useAddBlobToContaintainerMutation();
+
+    useEffect(() => {
+        setIsLoading(isLoadingGenerate || isLoadingPutBlob | isLoadingBECore)
+    }, [isLoadingGenerate, isLoadingPutBlob, setIsLoading, isLoadingBECore])
 
 
     const handleSubmit = () => {
-
-        const uploadFileBlobPromises = Array.from(files).map(file => generateSASURI(file.name).unwrap().then(({ putURL: { url: SASURI } }) => {
+        const uploadFileBlobPromises = Array.from(files).map(file => generateSASURI({ filename: file.name, user_container }).unwrap().then(({ putURL: { url: SASURI }, blobName }) => {
             putToBlobStorage({ file, SASURI }).unwrap().then(() => {
                 console.log({ SASURI })
                 toast.success(`File ${file.name} uploaded successfully`)
+                addBlobToContaintainer({ blobName, containerId: user_container_id }).unwrap(res => console.log({ res })).catch(err => { console.log({ err }) })
             }).catch(err => {
                 console.log({ err })
                 toast.error(`File ${file.name} uploaded failed`)
@@ -115,26 +129,28 @@ function SubmitFormBar({ files, setFiles }) {
             })
         }).catch(err => { console.log({ err }) }))
 
-        Promise.all(uploadFileBlobPromises)
+        Promise.all(uploadFileBlobPromises).finally(() => {
+            setFiles([])
+            setFileTempURIs([])
+            setIsLoading(false)
+        })
     }
     return (
-        <LoadingOverlay loading={isLoadingGenerate || isLoadingPutBlob}>
-            <div className="submit-bar flex items-center px-32">
-                <div className="submit-bar-content text-[#05a081]">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-6">
-                            <BsCloudUpload className="text-4xl" />
-                            <span className="text-2xl font-bold">{files.length} Files ready to upload</span>
-                        </div>
-                        <button
-                            onClick={handleSubmit}
-                            className="text-white border-[#05a081] bg-[#05a081] cursor-pointer inline-flex justify-center items-center rounded-md h-[50px] w-max font-[500] px-7 ">
-                            Submit your content
-                        </button>
+        <div className="submit-bar flex items-center px-32">
+            <div className="submit-bar-content text-[#05a081]">
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-6">
+                        <BsCloudUpload className="text-4xl" />
+                        <span className="text-2xl font-bold">{files.length} Files ready to upload</span>
                     </div>
+                    <button
+                        onClick={handleSubmit}
+                        className="text-white border-[#05a081] bg-[#05a081] cursor-pointer inline-flex justify-center items-center rounded-md h-[50px] w-max font-[500] px-7 ">
+                        Submit your content
+                    </button>
                 </div>
             </div>
-        </LoadingOverlay>
+        </div>
     )
 }
 

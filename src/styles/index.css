@@ -206,7 +206,7 @@ i {
     top: 50%;
     width: 100%;
     padding: 20px;
-    max-width: 850px;
+    max-width: 1280px;
     background: #fff;
     border-radius: 6px;
     opacity: 0;
@@ -274,7 +274,8 @@ header .buttons i:last-child:hover {
 }
 
 .preview-img .img {
-    max-height: 65vh;
+    max-height: 85vh;
+    width: 100%;
 }
 
 .preview-img img {

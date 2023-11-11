@@ -22,6 +22,7 @@ import { Toaster } from 'react-hot-toast';
 import EditProfile from './routes/edit-profile';
 import Register from './routes/register';
 import Activate from './routes/activate';
+import Search from './routes/search';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -55,25 +56,10 @@ const router = createBrowserRouter([
         path: "activate",
         element: <Activate />,
       },
-
-      // {
-      //   path: "contacts/:contactId",
-      //   element: <Contact />,
-      //   loader: contactLoader,
-      //   action: contactAction,
-      // },
-      // {
-      //   path: "contacts/:contactId/edit",
-      //   element: <EditContact />,
-      //   loader: contactLoader,
-      //   action: editAction,
-      // },
-      // {
-      //   path: "contacts/:contactId/destroy",
-      //   action: destroyAction,
-      //   errorElement: <div>Oops! There was an error.</div>
-      // },
-
+      {
+        path: "search",
+        element: <Search />,
+      },
     ],
   },
 ]);

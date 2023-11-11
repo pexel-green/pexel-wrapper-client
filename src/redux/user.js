@@ -3,8 +3,9 @@ import { endpoints } from './services/authService'
 const initialState = {
     id: null,
     email: null,
-    type: null,
-    isAuthenticated: null
+    isAuthenticated: null,
+    container: null,
+    selectImageData: null
 }
 
 export const userSlice = createSlice({
@@ -14,22 +15,26 @@ export const userSlice = createSlice({
         resetUserState(state) {
             state.id = null
             state.email = null
-            state.type = null
             state.isAuthenticated = null
+            state.container = null
         },
+        setSelectImage(state, { payload }) {
+            state.selectImageData = payload
+        }
     },
     extraReducers: (builder) => {
         builder.addMatcher(endpoints.verifyToken.matchFulfilled, (state, { payload }) => {
+            console.log({ payload })
             if (payload) {
                 state.id = payload.id
-                state.type = payload.type
                 state.email = payload.email
                 state.isAuthenticated = true
+                state.container = payload.containers
             }
         })
     }
 })
 
-export const { resetUserState } = userSlice.actions
+export const { resetUserState, setSelectImage } = userSlice.actions
 
 export default userSlice.reducer

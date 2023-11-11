@@ -1,64 +1,77 @@
 import { useEffect, useState } from "react";
+import { useSearchImageMutation } from "../redux/services/searchCognitive";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setSelectImage } from "../redux/user";
+import { Spinner } from "flowbite-react";
 
-// let searchTerm = null;
-const apiKey = "NIpNy4vBDKSth35kuuw4hYU2r2QW7uk14BM9LdwzkDCAdjDNN4ERmByk";
 
-
-export default function GalleryList() {
-
+export default function GalleryList({ search }) {
+    const [page, setPage] = useState(0);
+    useEffect(() => {
+        setPage(0)
+    }, [])
+    const handleLoadMore = () => {
+        setPage(prev => prev + 1)
+    }
     return (
         <section className="gallery">
             <ul className="images">
-                <GenerateImage apiURL={generateUrl("latest", 1, 15)} />
+                <GenerateImage query={{ skip: 0, top: 10 * (page + 1), search: search || "*" }} />
             </ul>
-            <button className="load-more">Load More</button>
+            <button className="load-more" onClick={handleLoadMore}>Load More</button>
         </section>
     )
 }
 
-function generateUrl(searchTerm = "hello", currentPage = 1, perPage = 15) {
-    return `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}`
-}
-// const imageWrapper = document.querySelector(".images");
-// const searchInput = document.querySelector(".search input");
-// const loadMoreBtn = document.querySelector(".gallery .load-more");
 
-
-
-function GenerateImage({ apiURL }) {
+function GenerateImage({ query }) {
     const [images, setImages] = useState([]);
-
+    const [searchImage] = useSearchImageMutation()
     useEffect(() => {
-        fetch(apiURL, {
-            headers: { Authorization: apiKey }
-        }).then(res => res.json()).then(data => {
-            console.log(data)
-            setImages(data.photos)
-        }).catch(() => alert("Failed to load images!"));
-    }, [])
+        searchImage(query).unwrap().then(data => {
+            setImages(data.value)
+        }).catch(err => {
+            console.log({ err })
+            toast.error("Failed to load image")
+        })
+    }, [query.top, query, searchImage, query.search])
 
     if (images?.length > 0) {
         return <ImageList images={images} />
     }
     return <>
-        Loading
+        {
+            images.length === 0 ? "No result found" : <Spinner />
+        }
     </>
 }
 
 function ImageList({ images }) {
-    console.log(images)
+    const imageHost = "https://pexelblobstorage.blob.core.windows.net/"
+    const dispatch = useDispatch()
+    const getImagePath = (subPath) => {
+        return imageHost + subPath
+    }
+
+    const handleSelectImage = (img) => {
+        window.document.getElementById("btn-close-modal-rec").click();
+        window.showLightbox("phamcaosang135", getImagePath(img.imagePath))
+        dispatch(setSelectImage(img))
+    }
     return images.map(img =>
-        <li className="card" key={img.src.large2x}>
+        <li className="card" key={img.id}>
             <img onClick={
-                () => { window.showLightbox(img.photographer, img.src.large2x) }
-            } src={img.src.large2x} alt="img" />
+                () => handleSelectImage(img)
+            } src={getImagePath(img.imagePath)} alt="img" />
             <div className="details">
                 <div className="photographer">
                     <i className="uil uil-camera"></i>
-                    <span>{img.photographer}</span>
+                    {/* <span>{img.photographer}</span> */}
+                    <span>phamcaosang135</span>
                 </div>
                 <button onClick={
-                    () => { window.downloadImg(img.src.large2x); }
+                    () => { window.downloadImg(getImagePath(img.imagePath)); }
 
                 }>
                     <i className="uil uil-import"></i>
@@ -67,26 +80,3 @@ function ImageList({ images }) {
         </li >
     )
 }
-
-// const loadMoreImages = () => {
-//     currentPage++; // Increment currentPage by 1
-//     // If searchTerm has some value then call API with search term else call default API
-//     let apiUrl = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
-//     apiUrl = searchTerm ? `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}` : apiUrl;
-//     getImages(apiUrl);
-// }
-
-// const loadSearchImages = (e) => {
-//     // If the search input is empty, set the search term to null and return from here
-//     if (e.target.value === "") return searchTerm = null;
-//     // If pressed key is Enter, update the current page, search term & call the getImages
-//     if (e.key === "Enter") {
-//         currentPage = 1;
-//         searchTerm = e.target.value;
-//         imageWrapper.innerHTML = "";
-//         getImages(`https://api.pexels.com/v1/search?query=${searchTerm}&page=1&per_page=${perPage}`);
-//     }
-// }
-
-// loadMoreBtn.addEventListener("click", loadMoreImages);
-// searchInput.addEventListener("keyup", loadSearchImages);
