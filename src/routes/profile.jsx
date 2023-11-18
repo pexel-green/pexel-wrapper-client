@@ -1,11 +1,10 @@
 import { Avatar, Button, Card, Dropdown } from "flowbite-react"
 import Navbar from "../component/navbar-custom"
 import { BsFillPencilFill, BsFillTrash3Fill } from "react-icons/bs";
-import GalleryList from "../component/galleryList";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDeleteBlobMutation, useGetBlobsByUserMutation, useGetUserByContainerQuery } from "../redux/services/mediaDataService";
+import { useDeleteBlobMutation, useGetBlobsByUserMutation } from "../redux/services/mediaDataService";
 import { setSelectImage } from "../redux/user";
 import { useGetBlobMetaDataQuery } from "../redux/services/azureBlobService";
 import toast from "react-hot-toast";
@@ -20,7 +19,7 @@ export default function Profile() {
     return (
         <>
             <Navbar />
-            <main className="px-5 max-w-screen-2xl mx-auto">user
+            <main className="px-5 max-w-screen-2xl mx-auto">
                 <div className="flex justify-center flex-col gap-10">
                     <Avatar img="https://avatar.iran.liara.run/public/49" rounded bordered size="xl" />
                     <p className="text-4xl text-center">{user?.email}</p>
@@ -45,9 +44,7 @@ export default function Profile() {
                     </div>
                 </div>
                 <section className="gallery">
-                    <ul className="images">
-                        {blobs.length > 0 ? <ImageList images={blobs} setBlobs={setBlobs} /> : <NoContent />}
-                    </ul>
+                    {blobs.length > 0 ? <ul className="images"> <ImageList images={blobs} setBlobs={setBlobs} />  </ul> : <NoContent />}
                 </section>
             </main >
         </>

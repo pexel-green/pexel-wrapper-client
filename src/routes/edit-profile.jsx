@@ -1,8 +1,10 @@
 import { Avatar, Button, Label, TextInput, Textarea } from "flowbite-react"
 import Navbar from "../component/navbar-custom"
+import { useSelector } from "react-redux"
 
 
 export default function EditProfile() {
+    const user = useSelector(state => state.user)
 
     return (
         <>
@@ -17,19 +19,19 @@ export default function EditProfile() {
                     <div className="flex flex-col gap-6">
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="email1" value="First name" />
+                                <Label htmlFor="firstname" value="First name" />
                             </div>
-                            <TextInput id="email1" type="email" placeholder="name@flowbite.com" required />
+                            <TextInput id="firstname" type="text" placeholder="John" />
                         </div>
                         <div>
                             <div className="mb-2 block">
                                 <Label htmlFor="email1" value="Email" />
                             </div>
-                            <TextInput id="email1" type="email" placeholder="name@flowbite.com" required />
+                            <TextInput id="email1" type="email" placeholder="name@flowbite.com" required value={user?.email} />
                         </div>
                         <div>
                             <div className="mt-2 block">
-                                <Label htmlFor="email1" value="Password" />
+                                <Label value="Password" />
                             </div>
                             <Button className="px-2 py-1 bg-slate-400">Change Password</Button>
                         </div>
@@ -37,9 +39,9 @@ export default function EditProfile() {
                     <div className="flex flex-col gap-6">
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="email1" value="Last name" />
+                                <Label htmlFor="lastname" value="Last name" />
                             </div>
-                            <TextInput id="email1" type="email" placeholder="name@flowbite.com" required />
+                            <TextInput id="lastname" type="text" placeholder="Wick" required />
                         </div>
                         <div>
                             <div className="mb-2 block">

@@ -27,6 +27,13 @@ export default function Navbar() {
         })
     }, [])
 
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') {
+            navigate("/search?search=" + encodeURIComponent(e.target.value))
+            console.log('do validate');
+        }
+    }
+
     return (
         <div className="navbar bg-base-100">
             <div className="flex-1">
@@ -35,7 +42,7 @@ export default function Navbar() {
             <div className="flex-none gap-2">
                 <div className="form-control">
                     <div className=" w-auto md:w-80">
-                        <TextInput id="email4" type="email" rightIcon={MdSearch} placeholder="Search for free photo" required />
+                        <TextInput id="email4" type="email" rightIcon={MdSearch} placeholder="Search for free photo" required onKeyDown={handleEnter} />
                     </div>
 
                 </div>

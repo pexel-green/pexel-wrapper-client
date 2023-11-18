@@ -40,7 +40,7 @@ export default function Login() {
             verifyToken(localStorage.getItem("token"))
         }).catch((err) => {
             console.log({ err })
-            toast.error("Wrong credential. Try again")
+            toast.error(err.data.message)
         })
 
     }
