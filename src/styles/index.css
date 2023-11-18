@@ -162,10 +162,15 @@ i {
     transition: 0.2s ease;
 }
 
-.details button {
+.details .import-btn {
     background: #fff;
     font-size: 1.1rem;
     padding: 3px 8px;
+}
+
+.details .delete-btn {
+    color: red;
+    font-size: 1.5rem;
 }
 
 .details .download-btn:hover {

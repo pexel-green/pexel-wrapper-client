@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import useAuthRedirect from "../custom-hook/useAuthRedirect";
 import NavigatePageButton from "../component/navigatePageButton";
 var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-function base64EncodeURI(text) {
+export function base64EncodeURI(text) {
     var binary = decodeURIComponent(encodeURIComponent(text));
     var base64 = btoa(binary);
     return base64;

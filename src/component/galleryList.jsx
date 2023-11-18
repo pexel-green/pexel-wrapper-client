@@ -4,6 +4,9 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { setSelectImage } from "../redux/user";
 import { Spinner } from "flowbite-react";
+import { useGetBlobMetaDataQuery } from "../redux/services/azureBlobService";
+import { useGetUserByContainerQuery } from "../redux/services/mediaDataService";
+import { Link } from "react-router-dom";
 
 
 export default function GalleryList({ search }) {
@@ -48,30 +51,39 @@ function GenerateImage({ query }) {
 }
 
 function ImageList({ images }) {
-    const imageHost = "https://pexelblobstorage.blob.core.windows.net/"
+    return images.map(img => <ImageCard key={img.id} imagePath={img.imagePath} img={img} />)
+}
+
+function ImageCard({ id, imagePath, img }) {
+    const { data } = useGetUserByContainerQuery(imagePath.split("/")[1])
+
+    const { data: metaData } = useGetBlobMetaDataQuery(imagePath)
     const dispatch = useDispatch()
+    const imageHost = "https://pexelblobstorage.blob.core.windows.net/"
     const getImagePath = (subPath) => {
         return imageHost + subPath
     }
-
-    const handleSelectImage = (img) => {
+    const handleSelectImage = () => {
         window.document.getElementById("btn-close-modal-rec").click();
-        window.showLightbox("phamcaosang135", getImagePath(img.imagePath))
-        dispatch(setSelectImage(img))
+        window.showLightbox(data?.User, getImagePath(imagePath))
+        dispatch(setSelectImage({ ...img, metaData }))
     }
-    return images.map(img =>
-        <li className="card" key={img.id}>
+
+    return (
+        <li className="card" key={id}>
             <img onClick={
-                () => handleSelectImage(img)
-            } src={getImagePath(img.imagePath)} alt="img" />
+                () => handleSelectImage({ id, imagePath })
+            } src={getImagePath(imagePath)} alt="img" />
             <div className="details">
                 <div className="photographer">
                     <i className="uil uil-camera"></i>
-                    {/* <span>{img.photographer}</span> */}
-                    <span>phamcaosang135</span>
+                    {
+                        data && <Link to={`user/${data.User.id}`}>{data.User.name}</Link>
+                    }
+
                 </div>
                 <button onClick={
-                    () => { window.downloadImg(getImagePath(img.imagePath)); }
+                    () => { window.downloadImg(getImagePath(imagePath)); }
 
                 }>
                     <i className="uil uil-import"></i>

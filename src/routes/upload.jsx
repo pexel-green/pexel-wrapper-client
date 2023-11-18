@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import Navbar from "../component/navbar-custom"
-import { Avatar, Label, Select, TextInput } from "flowbite-react";
+import { Avatar, Label, TextInput } from "flowbite-react";
 import { BsFillTrashFill, BsCloudUpload } from "react-icons/bs"
 import toast from "react-hot-toast";
 import { useValidateImageAdultMutation } from "../redux/services/imageValidation";
 import LoadingOverlay from "../component/loadingOverlay";
 import { useGenerateSASURIMutation } from "../redux/services/imageSASGenerate";
-import { usePutToBlobStorageMutation } from "../redux/services/uploadUsingSASToken";
+import { usePutToBlobStorageMutation } from "../redux/services/azureBlobService";
 import { useSelector } from "react-redux";
 import { useAddBlobToContaintainerMutation } from "../redux/services/mediaDataService";
 
@@ -17,6 +17,7 @@ const allow_files = "image/jpg, image/jpeg, image/png, video/mp4, video/quicktim
 export default function Upload() {
     const [files, setFiles] = useState([]);
     const [fileTempURIs, setFileTempURIs] = useState([]);
+    const [fileMetaData, setFileMetaData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [validateImageAdult, { isLoading: isLoadingValidatingImageAdult, isProcessing: isProcessingValidatingImageAdult }] = useValidateImageAdultMutation()
 
@@ -50,6 +51,7 @@ export default function Upload() {
             } else {
                 setFiles(prev => ([...prev, file]))
                 setFileTempURIs(prev => ([...prev, URL.createObjectURL(file)]))
+                setFileMetaData(prev => ([...prev, { title: "", tags: "", location: "" }]))
             }
         }).catch(err => {
             console.log({ err })
@@ -64,6 +66,7 @@ export default function Upload() {
     const handleDelete = (key) => {
         setFiles(prev => prev.filter((_, index) => index !== key))
         setFileTempURIs(prev => prev.filter((_, index) => index !== key))
+        setFileMetaData(prev => prev.filter((_, index) => index !== key))
     }
 
     useEffect(() => {
@@ -92,11 +95,11 @@ export default function Upload() {
                                 <span className="absolute top-5 right-8 text-[#bfbfbf]">(0/10)</span>
                             </div>
                             :
-                            <ImageProcess files={fileTempURIs} handleDelete={handleDelete} handleAddImage={handleAddImage} />
+                            <ImageProcess files={fileTempURIs} handleDelete={handleDelete} handleAddImage={handleAddImage} setFileMetaData={setFileMetaData} />
                     }
                 </main>
                 {
-                    files.length > 0 && <SubmitFormBar files={files} setFiles={setFiles} setFileTempURIs={setFileTempURIs} setIsLoading={setIsLoading} />
+                    files.length > 0 && <SubmitFormBar files={files} setFiles={setFiles} setFileTempURIs={setFileTempURIs} setFileMetaData={setFileMetaData} setIsLoading={setIsLoading} fileMetaData={fileMetaData} />
                 }
 
             </LoadingOverlay>
@@ -104,7 +107,7 @@ export default function Upload() {
     )
 }
 
-function SubmitFormBar({ files, setFiles, setFileTempURIs, setIsLoading }) {
+function SubmitFormBar({ files, setFiles, setFileTempURIs, setIsLoading, setFileMetaData, fileMetaData }) {
     const { id: user_container_id, name: user_container } = useSelector(state => state.user.container)
     console.log({ user_container })
     const [generateSASURI, { isLoading: isLoadingGenerate }] = useGenerateSASURIMutation();
@@ -117,8 +120,8 @@ function SubmitFormBar({ files, setFiles, setFileTempURIs, setIsLoading }) {
 
 
     const handleSubmit = () => {
-        const uploadFileBlobPromises = Array.from(files).map(file => generateSASURI({ filename: file.name, user_container }).unwrap().then(({ putURL: { url: SASURI }, blobName }) => {
-            putToBlobStorage({ file, SASURI }).unwrap().then(() => {
+        const uploadFileBlobPromises = Array.from(files).map((file, index) => generateSASURI({ filename: file.name, user_container }).unwrap().then(({ putURL: { url: SASURI }, blobName }) => {
+            putToBlobStorage({ file, SASURI, metadata: fileMetaData[index] }).unwrap().then(() => {
                 console.log({ SASURI })
                 toast.success(`File ${file.name} uploaded successfully`)
                 addBlobToContaintainer({ blobName, containerId: user_container_id }).unwrap(res => console.log({ res })).catch(err => { console.log({ err }) })
@@ -132,6 +135,7 @@ function SubmitFormBar({ files, setFiles, setFileTempURIs, setIsLoading }) {
         Promise.all(uploadFileBlobPromises).finally(() => {
             setFiles([])
             setFileTempURIs([])
+            setFileMetaData([])
             setIsLoading(false)
         })
     }
@@ -154,7 +158,7 @@ function SubmitFormBar({ files, setFiles, setFileTempURIs, setIsLoading }) {
     )
 }
 
-function ImageProcess({ files, handleDelete, handleAddImage }) {
+function ImageProcess({ files, handleDelete, handleAddImage, setFileMetaData }) {
 
     return (
         <>
@@ -180,20 +184,30 @@ function ImageProcess({ files, handleDelete, handleAddImage }) {
                     <div>
                         {
                             files.map((f, index) => {
-                                return <ImageItemCart key={index} index={index} file={f} handleDelete={handleDelete} />
+                                return <ImageItemCart key={index} index={index} file={f} handleDelete={handleDelete} setFileMetaData={setFileMetaData} />
                             })
                         }
                     </div>
-
                 </div>
-
-
             </div>
         </>
     )
 }
 
-function ImageItemCart({ index, file, handleDelete }) {
+function ImageItemCart({ index, file, handleDelete, setFileMetaData }) {
+    const handleChange = (ev) => {
+        setFileMetaData(prev => {
+            return prev.map((item, id) => {
+                if (id === index) {
+                    return {
+                        ...item,
+                        [ev.target.name]: ev.target.value
+                    }
+                }
+                return item
+            })
+        })
+    }
     return <>
         <section className="grid grid-cols-12" id={`file_${index}`}>
 
@@ -211,26 +225,19 @@ function ImageItemCart({ index, file, handleDelete }) {
                                 <div className="mb-2 block">
                                     <Label htmlFor="base" value="Title (Optional)" />
                                 </div>
-                                <TextInput id="base" type="text" sizing="lg" placeholder="Enter title" />
+                                <TextInput name="title" id="base" type="text" sizing="lg" placeholder="Enter title" onChange={handleChange} />
                             </div>
                             <div className="ml-12 mr-0">
                                 <div className="mb-2 block">
                                     <Label htmlFor="base" value="Tags (Optional)" />
                                 </div>
-                                <TextInput id="base" type="text" sizing="lg" placeholder="Enter tags" />
+                                <TextInput name="tags" id="base" type="text" sizing="lg" placeholder="Enter tags" onChange={handleChange} />
                             </div>
                             <div className="ml-12 mr-0">
                                 <div className="mb-2 block">
                                     <Label htmlFor="base" value="Location (Optional)" />
                                 </div>
-                                <TextInput id="base" type="text" sizing="lg" placeholder="Enter location" />
-                            </div>
-                            <div className="ml-12 mr-0">
-                                <div className="mb-2 block">
-                                    <Label htmlFor="base" value="Challenges (Optional)" />
-                                </div>
-                                <Select id="countries" sizing="lg" >
-                                </Select>
+                                <TextInput name="location" id="base" type="text" sizing="lg" placeholder="Enter location" onChange={handleChange} />
                             </div>
                         </div>
                     </div >

@@ -17,6 +17,7 @@ export default function Navbar() {
         localStorage.clear()
         dispatch(resetUserState())
         toast.success("Sign out sucessfully")
+        navigate("/")
     }
 
     useLayoutEffect(() => {

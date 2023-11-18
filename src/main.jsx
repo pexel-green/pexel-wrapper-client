@@ -23,6 +23,7 @@ import EditProfile from './routes/edit-profile';
 import Register from './routes/register';
 import Activate from './routes/activate';
 import Search from './routes/search';
+import PublicProfile from './routes/public-profile';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,12 +43,14 @@ const router = createBrowserRouter([
         path: "profile",
         element: <Profile />,
       },
-
       {
         path: "edit-profile",
         element: <EditProfile />,
       },
-
+      {
+        path: "user/:id",
+        element: <PublicProfile />,
+      },
       {
         path: "register",
         element: <Register />,

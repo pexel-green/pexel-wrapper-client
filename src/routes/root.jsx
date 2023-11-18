@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useVerifyTokenMutation } from "../redux/services/authService";
 import { useEffect } from "react";
 import GalleryList from "../component/galleryList";
@@ -23,15 +23,35 @@ export default function Root() {
 }
 
 function ModalImage() {
+    const location = useLocation()
+
+    if (location?.pathname !== "/profile") {
+        return <div className="lightbox">
+            <div className="wrapper">
+                <header>
+                    <div className="photographer">
+                        <i className="uil uil-camera"></i>
+                        <span></span>
+                    </div>
+                    <div className="buttons">
+                        <i className="uil uil-image-plus mr-3" onClick={() => document.getElementById('ModalRecommend').showModal()}></i>
+                        <i className="uil uil-import" onClick={(e) => window.downloadImg(e.target.getAttribute("data-img"))}></i>
+                        <i className="close-icon uil uil-times" onClick={() => window.hideLightbox()}></i>
+                    </div>
+                </header>
+                <div className="preview-img">
+                    <div className="img"><img src="" alt="preview-img" /></div>
+                </div>
+            </div>
+        </div>
+    }
     return <div className="lightbox">
         <div className="wrapper">
             <header>
                 <div className="photographer">
                     <i className="uil uil-camera"></i>
-                    <span></span>
                 </div>
                 <div className="buttons">
-                    <i className="uil uil-image-plus mr-3" onClick={() => document.getElementById('ModalRecommend').showModal()}></i>
                     <i className="uil uil-import" onClick={(e) => window.downloadImg(e.target.getAttribute("data-img"))}></i>
                     <i className="close-icon uil uil-times" onClick={() => window.hideLightbox()}></i>
                 </div>
@@ -54,9 +74,12 @@ function ModalRecommend() {
             <div className="modal-box w-full max-w-[98%]">
                 <form className="modal-action flex justify-between items-center" method="dialog">
                     <div className="text-3xl font-bold">Similar images</div>
-                    <button className="btn" onClick={handleClickClose} id ="btn-close-modal-rec">Close</button>
+                    <button className="btn" onClick={handleClickClose} id="btn-close-modal-rec">Close</button>
                 </form>
-                <GalleryList search={`${data?.categories} ${data?.color}  ${data?.tags.split(",").join(" ")} `} />
+                {
+
+                }
+                <GalleryList search={`${data?.categories} ${data?.color}  ${data?.tags?.split(",").join(" ")} `} />
             </div>
         </dialog >
     </>
