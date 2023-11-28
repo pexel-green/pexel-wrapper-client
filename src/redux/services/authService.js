@@ -3,8 +3,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const authService = createApi({
     reducerPath: 'auth',
     baseQuery: fetchBaseQuery({
-        // baseUrl: 'https://be-core-service.azurewebsites.net/api/auth'
-        baseUrl: 'http://localhost:5002/api/auth'
+        baseUrl: 'https://be-core-service.azurewebsites.net/api/auth'
+        // baseUrl: 'http://localhost:5002/api/auth'
 
     }),
     endpoints: (builder) => ({
