@@ -48,7 +48,8 @@ export default function Upload() {
         const uploadFileValidationPromises = Array.from(newFiles).map((file) => validateImageAdult(file).unwrap().then(({ adult }) => {
             if (adult.isAdultContent || adult.isGoryContent || adult.RacyContent) {
                 toast.error(`File ${file.name} contains adult or gory or racy content restriction`, { duration: 5000 });
-            } else {
+            }
+            else {
                 setFiles(prev => ([...prev, file]))
                 setFileTempURIs(prev => ([...prev, URL.createObjectURL(file)]))
                 setFileMetaData(prev => ([...prev, { title: "", tags: "", location: "" }]))
