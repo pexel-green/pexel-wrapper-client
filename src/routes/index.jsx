@@ -31,10 +31,10 @@ export function SearchWithBackGround() {
             <img src="https://images.pexels.com/photos/16714211/pexels-photo-16714211.jpeg?auto=compress&bri=5&cs=tinysrgb&fit=crop&h=500&w=1400&dpr=1" alt="search-img" />
             <div className="content">
                 <h1>The best free medium, royalty free</h1>
-                <p>Search and download mages & videos shared by creators</p>
+                <p>Search and download images shared by creators</p>
                 <div className="search-box">
                     <i className="uil uil-search"></i>
-                    <input type="text" placeholder="Search images & videos" onKeyDown={handleEnter} />
+                    <input type="text" placeholder="Search for images" onKeyDown={handleEnter} />
                 </div>
             </div>
         </section>
